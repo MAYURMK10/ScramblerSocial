@@ -1,0 +1,10 @@
+/* App specific styles */
+.feed-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  color: var(--text-dim);
+}
