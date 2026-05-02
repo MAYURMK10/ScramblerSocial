@@ -1,5 +1,8 @@
+Domains
 scrambler-social-p46o.vercel.app
++1
 scrambler-social-p46o-git-main-mayurmk10s-projects.vercel.app
+scrambler-social-p46o-dxlc7fb0b-mayurmk10s-projects.vercel.app
   
   Deployment Details:
    - Production URL: https://myfirstapp-gray.vercel.app (https://myfirstapp-gray.vercel.app)
