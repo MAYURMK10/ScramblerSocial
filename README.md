@@ -1,8 +1,6 @@
 app link: scrambler-social-p46o-dxlc7fb0b-mayurmk10s-projects.vercel.app
 
 
-
-scrambler-social-p46o-4mtxwoyex-mayurmk10s-projects.vercel.app
   Deployment Details:
    - Production URL: https://myfirstapp-gray.vercel.app (https://myfirstapp-gray.vercel.app)
    - Deployment URL: https://myfirstapp-oc8octk7w-mayurmk10s-projects.vercel.app (https://myfirstapp-oc8octk7w-mayurmk10s-projects.vercel.app)
