@@ -11,7 +11,6 @@ const UploadForm = ({ onComplete }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
