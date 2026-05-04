@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { db, isLive } from '../firebase';
-import { doc, updateDoc, arrayUnion, arrayRemove, collection, onSnapshot, query, orderBy, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db, storage, isLive } from '../firebase';
+import { doc, updateDoc, arrayUnion, arrayRemove, collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { ref, deleteObject } from 'firebase/storage';
 import { useAuth } from '../AuthContext';
 
 const BuildCard = ({ build }) => {
@@ -8,6 +9,12 @@ const BuildCard = ({ build }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [showComments, setShowComments] = useState(false);
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+
+  const isOwner = user && user.uid === build.userId;
+
+  // Support both single image (legacy) and multiple images (new)
+  const images = build.imageUrls || (build.imageUrl ? [build.imageUrl] : []);
 
   const isLiked = user && build.likes?.includes(user.uid);
 
@@ -32,6 +39,35 @@ const BuildCard = ({ build }) => {
     });
   };
 
+  const handleDelete = async () => {
+    if (!isLive) return alert("Delete feature is disabled in Demo Mode.");
+    if (!window.confirm('Are you sure you want to delete this build? This will also remove all images and comments.')) return;
+
+    try {
+      // 1. Delete images from Storage if they exist
+      if (build.imageUrls && build.imageUrls.length > 0) {
+        const deletePromises = build.imageUrls.map(url => {
+          // Only attempt to delete if it's a Firebase Storage URL
+          if (url.includes('firebasestorage.googleapis.com')) {
+            const imageRef = ref(storage, url);
+            return deleteObject(imageRef).catch(err => console.warn("Failed to delete image:", err));
+          }
+          return Promise.resolve();
+        });
+        await Promise.all(deletePromises);
+      } else if (build.imageUrl && build.imageUrl.includes('firebasestorage.googleapis.com')) {
+        const imageRef = ref(storage, build.imageUrl);
+        await deleteObject(imageRef).catch(err => console.warn("Failed to delete image:", err));
+      }
+
+      // 2. Delete the build document (comments subcollection will be orphaned but inaccessible)
+      await deleteDoc(doc(db, 'builds', build.id));
+    } catch (error) {
+      console.error("Error deleting build:", error);
+      alert("Failed to delete build.");
+    }
+  };
+
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!user || !newComment.trim()) return;
@@ -46,14 +82,45 @@ const BuildCard = ({ build }) => {
     setNewComment('');
   };
 
+  const nextImage = (e) => {
+    e.stopPropagation();
+    setCurrentImgIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = (e) => {
+    e.stopPropagation();
+    setCurrentImgIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   return (
     <div className="build-card">
       <div className="card-header">
-        <img src={build.userPhoto || 'https://via.placeholder.com/40'} alt={build.userName} className="avatar" />
-        <span className="username">{build.userName}</span>
+        <div className="user-info">
+          <img src={build.userPhoto || 'https://via.placeholder.com/40'} alt={build.userName} className="avatar" />
+          <span className="username">{build.userName}</span>
+        </div>
+        {isOwner && (
+          <button className="delete-btn" onClick={handleDelete} title="Delete build">
+            🗑️
+          </button>
+        )}
       </div>
       
-      <img src={build.imageUrl} alt={build.title} className="build-image" />
+      <div className="card-image-wrapper">
+        <img src={images[currentImgIndex]} alt={build.title} className="build-image" />
+        
+        {images.length > 1 && (
+          <>
+            <button className="slider-btn prev" onClick={prevImage}>❮</button>
+            <button className="slider-btn next" onClick={nextImage}>❯</button>
+            <div className="slider-dots">
+              {images.map((_, i) => (
+                <span key={i} className={`dot ${i === currentImgIndex ? 'active' : ''}`}></span>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
       
       <div className="card-content">
         <h4>{build.title}</h4>
