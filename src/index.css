@@ -352,6 +352,8 @@ a {
   font-size: 1rem;
 }
 
+/* ... previous styles ... */
+
 /* Comments */
 .comments-section {
   margin-top: 20px;
@@ -383,4 +385,114 @@ a {
   border-radius: 4px;
   color: var(--text-main);
   font-size: 0.85rem;
+}
+
+/* Responsive Queries */
+@media (max-width: 768px) {
+  .hero h2 {
+    font-size: 2rem;
+  }
+  
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .builds-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .upload-container {
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .navbar {
+    height: 60px;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .user-name {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 40px 0;
+  }
+
+  .card-image-wrapper {
+    aspect-ratio: 1/1;
+  }
+}
+
+.dev-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #000;
+  color: var(--accent);
+  padding: 10px;
+  text-align: center;
+  font-size: 0.8rem;
+  border-top: 1px solid var(--accent);
+  z-index: 1000;
+}
+
+.dev-footer code {
+  background: #222;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+
+/* Floating Action Button */
+.fab-upload {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: #000;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  z-index: 99;
+  display: none; /* Hidden by default, shown on mobile */
+}
+
+.fab-upload.active {
+  background-color: var(--error);
+  transform: rotate(45deg);
+}
+
+@media (max-width: 768px) {
+  .fab-upload {
+    display: flex;
+  }
+  
+  /* Make the "Add Photos" button easier to tap on mobile */
+  .file-label-small {
+    font-size: 1rem;
+    padding: 20px;
+    border-width: 3px;
+  }
+
+  /* Reduce space for dev footer on mobile so it doesn't overlap FAB too much */
+  .dev-footer {
+    padding: 5px;
+    font-size: 0.7rem;
+  }
 }

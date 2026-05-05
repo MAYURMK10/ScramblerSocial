@@ -25,20 +25,25 @@ A user-centric platform for scrambler enthusiasts to showcase their custom build
 - **UI Elements:** Cards with subtle shadows, rugged border-radius (4px), and glassmorphism for overlays.
 
 ## 4. Implementation Steps
-1. **Initial Cleanup:** Remove boilerplate files from CRA.
-2. **Firebase Integration:** Initialize Firebase project and local configuration.
-3. **Components Development:**
-    - `Navbar`: Brand logo and Auth buttons.
-    - `Feed`: Grid of `BuildCard` components.
-    - `UploadForm`: Modal/Page for new submissions.
-    - `BuildDetail`: Expanded view for comments and likes.
-4. **Logic Implementation:**
-    - Auth state management (React Context).
-    - Firestore queries for fetching and posting data.
-    - Firebase Storage handling for image resizing/uploads.
-5. **Polishing:** CSS transitions, responsive grid, and empty states.
+1. [x] **Initial Cleanup:** Remove boilerplate files from CRA.
+2. [x] **Firebase Integration:** Initialize Firebase project and local configuration.
+3. [x] **Components Development:**
+    - [x] `Navbar`: Brand logo and Auth buttons.
+    - [x] `Feed`: Grid of `BuildCard` components.
+    - [x] `UploadForm`: Modal/Page for new submissions.
+    - [ ] `BuildDetail`: Expanded view for comments and likes (Basic version in BuildCard).
+4. [x] **Logic Implementation:**
+    - [x] Auth state management (React Context).
+    - [x] Firestore queries for fetching and posting data.
+    - [x] Firebase Storage handling for image resizing/uploads.
+5. [x] **Polishing:** CSS transitions, responsive grid, and empty states.
+6. [x] **Mobile Optimization:**
+    - [x] Responsive CSS media queries.
+    - [x] Floating Action Button for uploads.
+    - [x] App manifest and branding updates.
 
 ## 5. Next Steps
-- [ ] Initialize Firebase SDK.
-- [ ] Create the base CSS theme.
-- [ ] Implement Authentication context.
+- [x] Initialize Firebase SDK.
+- [x] Create the base CSS theme.
+- [x] Implement Authentication context.
+- [ ] Implement BuildDetail page for deeper interaction.

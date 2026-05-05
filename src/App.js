@@ -33,6 +33,22 @@ function App() {
 
         <Feed />
       </main>
+
+      {user && (
+        <button 
+          className={`fab-upload ${showUpload ? 'active' : ''}`}
+          onClick={() => setShowUpload(!showUpload)}
+          aria-label="Toggle upload"
+        >
+          {showUpload ? '×' : '+'}
+        </button>
+      )}
+
+      {process.env.NODE_ENV === 'development' && (
+        <footer className="dev-footer">
+          <p>📱 Access from your phone: <code>http://192.168.0.106:3000</code></p>
+        </footer>
+      )}
     </div>
   );
 }
