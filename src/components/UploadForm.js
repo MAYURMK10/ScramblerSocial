@@ -3,6 +3,7 @@ import { db, storage, isLive } from '../firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../AuthContext';
+import { analyzeBikeImage } from '../aiService';
 
 const UploadForm = ({ onComplete }) => {
   const { user } = useAuth();
@@ -10,16 +11,34 @@ const UploadForm = ({ onComplete }) => {
   const [previews, setPreviews] = useState([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [baseBike, setBaseBike] = useState('');
+  const [modifications, setModifications] = useState([]);
+  const [newMod, setNewMod] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 0) {
-      const newImages = [...images, ...files].slice(0, 5); // Limit to 5 images
+      const isFirstUpload = images.length === 0;
+      const newImages = [...images, ...files].slice(0, 5);
       setImages(newImages);
       
       const newPreviews = newImages.map(file => URL.createObjectURL(file));
       setPreviews(newPreviews);
+
+      // Trigger AI Analysis on the first image added
+      if (isFirstUpload && files[0]) {
+        setAnalyzing(true);
+        const aiResult = await analyzeBikeImage(files[0]);
+        if (aiResult) {
+          setTitle(aiResult.suggestedTitle || '');
+          setDescription(aiResult.suggestedDescription || '');
+          setBaseBike(aiResult.baseBike || '');
+          setModifications(aiResult.modifications || []);
+        }
+        setAnalyzing(false);
+      }
     }
   };
 
@@ -28,6 +47,18 @@ const UploadForm = ({ onComplete }) => {
     const newPreviews = previews.filter((_, i) => i !== index);
     setImages(newImages);
     setPreviews(newPreviews);
+  };
+
+  const addMod = (e) => {
+    e.preventDefault();
+    if (newMod.trim()) {
+      setModifications([...modifications, newMod.trim()]);
+      setNewMod('');
+    }
+  };
+
+  const removeMod = (index) => {
+    setModifications(modifications.filter((_, i) => i !== index));
   };
 
   const handleUpload = async (e) => {
@@ -54,7 +85,9 @@ const UploadForm = ({ onComplete }) => {
       await addDoc(collection(db, 'builds'), {
         title,
         description,
-        imageUrls: urls, // Store array of URLs
+        baseBike,
+        modifications,
+        imageUrls: urls,
         userId: user.uid,
         userName: user.displayName,
         userPhoto: user.photoURL,
@@ -63,10 +96,6 @@ const UploadForm = ({ onComplete }) => {
       });
 
       setUploading(false);
-      setTitle('');
-      setDescription('');
-      setImages([]);
-      setPreviews([]);
       if (onComplete) onComplete();
     } catch (error) {
       console.error("Upload failed:", error);
@@ -94,24 +123,61 @@ const UploadForm = ({ onComplete }) => {
               </label>
             )}
           </div>
+          {analyzing && <p className="ai-status">✨ AI is analyzing your bike parts...</p>}
         </div>
 
-        <input 
-          type="text" 
-          placeholder="Build Title (e.g. 1974 Honda CB450)" 
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+        <div className="form-group">
+          <label>Build Title</label>
+          <input 
+            type="text" 
+            placeholder="e.g. 1974 Honda CB450 Brat" 
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
 
-        <textarea 
-          placeholder="Tell us about your build..." 
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
+        <div className="form-group">
+          <label>Base Bike (Make/Model)</label>
+          <input 
+            type="text" 
+            placeholder="e.g. Honda CB450" 
+            value={baseBike}
+            onChange={(e) => setBaseBike(e.target.value)}
+          />
+        </div>
 
-        <button type="submit" className="btn btn-primary" disabled={uploading || images.length === 0}>
+        <div className="form-group">
+          <label>Modifications</label>
+          <div className="mods-input">
+            <input 
+              type="text" 
+              placeholder="Add a mod (e.g. Custom Exhaust)" 
+              value={newMod}
+              onChange={(e) => setNewMod(e.target.value)}
+            />
+            <button type="button" onClick={addMod} className="btn-add-mod">Add</button>
+          </div>
+          <div className="mods-list">
+            {modifications.map((mod, index) => (
+              <span key={index} className="mod-tag">
+                {mod} <button type="button" onClick={() => removeMod(index)}>×</button>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label>Description</label>
+          <textarea 
+            placeholder="Tell us about your build..." 
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </div>
+
+        <button type="submit" className="btn btn-primary" disabled={uploading || analyzing || images.length === 0}>
           {uploading ? 'Uploading...' : `Post Build (${images.length} photos)`}
         </button>
       </form>

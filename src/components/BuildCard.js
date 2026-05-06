@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { db, storage, isLive } from '../firebase';
 import { doc, updateDoc, arrayUnion, arrayRemove, collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
@@ -12,6 +13,55 @@ const BuildCard = ({ build }) => {
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
   const isOwner = user && user.uid === build.userId;
+
+  // Check if the post was created less than 15 minutes ago
+  const [isEditable, setIsEditable] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(build.title);
+  const [editDescription, setEditDescription] = useState(build.description);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    // If no timestamp yet (still uploading/syncing), don't show edit yet
+    if (!build.createdAt || !isOwner) {
+      setIsEditable(false);
+      return;
+    }
+
+    const checkEditable = () => {
+      const fifteenMinutes = 15 * 60 * 1000;
+      const createdAt = build.createdAt.toMillis ? build.createdAt.toMillis() : build.createdAt;
+      const now = Date.now();
+      const diff = now - createdAt;
+      
+      setIsEditable(diff < fifteenMinutes);
+    };
+
+    checkEditable();
+    const interval = setInterval(checkEditable, 10000); // Check every 10s
+    return () => clearInterval(interval);
+  }, [build.createdAt, isOwner]);
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (!isLive) return alert("Edit feature is disabled in Demo Mode.");
+    
+    setSaving(true);
+    try {
+      const buildRef = doc(db, 'builds', build.id);
+      await updateDoc(buildRef, {
+        title: editTitle,
+        description: editDescription,
+        updatedAt: serverTimestamp()
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating build:", error);
+      alert("Failed to update build.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   // Support both single image (legacy) and multiple images (new)
   const images = build.imageUrls || (build.imageUrl ? [build.imageUrl] : []);
@@ -82,6 +132,37 @@ const BuildCard = ({ build }) => {
     setNewComment('');
   };
 
+  const handleDeleteComment = async (commentId) => {
+    if (!isLive) return alert("Delete feature is disabled in Demo Mode.");
+    if (!window.confirm('Delete this comment?')) return;
+
+    try {
+      await deleteDoc(doc(db, 'builds', build.id, 'comments', commentId));
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: `Scrambler Social - ${build.title}`,
+      text: `Check out this custom build by ${build.userName}: ${build.description}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      // Fallback: Copy link to clipboard
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  };
+
   const nextImage = (e) => {
     e.stopPropagation();
     setCurrentImgIndex((prev) => (prev + 1) % images.length);
@@ -92,24 +173,56 @@ const BuildCard = ({ build }) => {
     setCurrentImgIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  const getTimeAgo = (timestamp) => {
+    if (!timestamp) return 'Just now';
+    const date = timestamp.toMillis ? new Date(timestamp.toMillis()) : new Date(timestamp);
+    const now = new Date();
+    const diffInMs = now - date;
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInMs < 60000) return 'Just now';
+    if (diffInMs < 3600000) return Math.floor(diffInMs / 60000) + 'm ago';
+    if (diffInMs < 86400000) return Math.floor(diffInMs / 3600000) + 'h ago';
+    
+    if (diffInDays < 7) {
+      return diffInDays === 1 ? '1 day ago' : `${diffInDays} days ago`;
+    } else {
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+  };
+
   return (
     <div className="build-card">
       <div className="card-header">
         <div className="user-info">
           <img src={build.userPhoto || 'https://via.placeholder.com/40'} alt={build.userName} className="avatar" />
-          <span className="username">{build.userName}</span>
+          <div className="user-meta">
+            <span className="username">{build.userName}</span>
+            <span className="time-ago">{getTimeAgo(build.createdAt)}</span>
+          </div>
         </div>
-        {isOwner && (
-          <button className="delete-btn" onClick={handleDelete} title="Delete build">
-            🗑️
-          </button>
-        )}
+        <div className="card-actions">
+          {isEditable && !isEditing && (
+            <button className="edit-btn" onClick={() => setIsEditing(true)} title="Edit build">
+              ✏️
+            </button>
+          )}
+          {isOwner && (
+            <button className="delete-btn" onClick={handleDelete} title="Delete build">
+              🗑️
+            </button>
+          )}
+        </div>
       </div>
       
       <div className="card-image-wrapper">
         <img src={images[currentImgIndex]} alt={build.title} className="build-image" />
         
-        {images.length > 1 && (
+        {images.length > 1 && !isEditing && (
           <>
             <button className="slider-btn prev" onClick={prevImage}>❮</button>
             <button className="slider-btn next" onClick={nextImage}>❯</button>
@@ -123,8 +236,56 @@ const BuildCard = ({ build }) => {
       </div>
       
       <div className="card-content">
-        <h4>{build.title}</h4>
-        <p className="description">{build.description}</p>
+        {isEditing ? (
+          <form onSubmit={handleUpdate} className="edit-form">
+            <input 
+              type="text" 
+              value={editTitle} 
+              onChange={(e) => setEditTitle(e.target.value)} 
+              required 
+              placeholder="Title"
+            />
+            <textarea 
+              value={editDescription} 
+              onChange={(e) => setEditDescription(e.target.value)} 
+              required 
+              placeholder="Description"
+            />
+            <div className="edit-buttons">
+              <button type="submit" className="btn btn-primary btn-small" disabled={saving}>
+                {saving ? 'Saving...' : 'Save'}
+              </button>
+              <button type="button" className="btn btn-secondary btn-small" onClick={() => setIsEditing(false)} disabled={saving}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <h4>
+              <Link to={`/build/${build.id}`} className="build-link">
+                {build.title}
+              </Link>
+              {build.updatedAt && <small className="edited-tag">(Edited)</small>}
+            </h4>
+            
+            {build.baseBike && (
+              <div className="base-bike-info">
+                <span>🏍️ Base: <strong>{build.baseBike}</strong></span>
+              </div>
+            )}
+
+            <p className="description">{build.description}</p>
+
+            {build.modifications && build.modifications.length > 0 && (
+              <div className="card-mods-list">
+                {build.modifications.map((mod, index) => (
+                  <span key={index} className="mod-pill">{mod}</span>
+                ))}
+              </div>
+            )}
+          </>
+        )}
         
         <div className="card-stats">
           <button className={`like-btn ${isLiked ? 'liked' : ''}`} onClick={handleLike}>
@@ -133,6 +294,9 @@ const BuildCard = ({ build }) => {
           <button className="comment-toggle" onClick={() => setShowComments(!showComments)}>
             💬 {comments.length}
           </button>
+          <button className="share-btn" onClick={handleShare}>
+            🔗 Share
+          </button>
         </div>
 
         {showComments && (
@@ -140,7 +304,12 @@ const BuildCard = ({ build }) => {
             <div className="comments-list">
               {comments.map(c => (
                 <div key={c.id} className="comment">
-                  <strong>{c.userName}</strong>: {c.text}
+                  <div className="comment-text">
+                    <strong>{c.userName}</strong>: {c.text}
+                  </div>
+                  {user && user.uid === c.userId && (
+                    <button className="btn-delete-comment" onClick={() => handleDeleteComment(c.id)}>×</button>
+                  )}
                 </div>
               ))}
             </div>

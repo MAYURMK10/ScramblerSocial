@@ -1,79 +1,36 @@
-app link: scrambler-social-p46o-dxlc7fb0b-mayurmk10s-projects.vercel.app
+# Scrambler Social 🏍️
 
+A specialized social platform for scrambler motorcycle enthusiasts to showcase their custom builds, share inspiration, and connect with the community.
 
-  Deployment Details:
-   - Production URL: https://myfirstapp-gray.vercel.app (https://myfirstapp-gray.vercel.app)
-   - Deployment URL: https://myfirstapp-oc8octk7w-mayurmk10s-projects.vercel.app (https://myfirstapp-oc8octk7w-mayurmk10s-projects.vercel.app)
+## 📱 Mobile-First Experience
+Scrambler Social is optimized for mobile usage, allowing you to upload your build directly from your garage.
 
+- **Direct Uploads:** Use the orange `+` button on mobile to snap and post photos.
+- **Native Sharing:** Share your favorite builds via your phone's native share sheet.
+- **Home Screen App:** "Add to Home Screen" for a standalone, app-like experience.
 
+### Accessing on Mobile (Local Development)
+To test on your phone during development:
+1. Ensure your phone and PC are on the same Wi-Fi.
+2. Visit the URL shown in the footer of the app (usually `http://[YOUR-IP]:3000`).
 
-# Getting Started with Create React App
+## ✨ Key Features
+- **Visual Feed:** A rugged, dark-mode grid of custom builds.
+- **Multi-Image Support:** Upload up to 5 photos per build with an interactive slider.
+- **Time-Limited Editing:** Edit your post's title and description within a 15-minute window.
+- **Social Interaction:** Like builds and join the conversation with comments.
+- **Firebase Powered:** Real-time updates and secure authentication.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 🛠️ Tech Stack
+- **Frontend:** React 19 + Vanilla CSS
+- **Backend:** Firebase (Auth, Firestore, Storage)
+- **Deployment:** Vercel / GitHub Pages
 
-## Available Scripts
+## 🚀 Getting Started
+1. **Clone the repo**
+2. **Install dependencies:** `npm install`
+3. **Configure Firebase:** Create a `.env.local` file with your Firebase keys.
+4. **Run the app:** `npm start`
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+*Created for the scrambler community.*

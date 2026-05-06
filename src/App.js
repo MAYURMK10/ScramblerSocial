@@ -1,46 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Feed from './components/Feed';
-import UploadForm from './components/UploadForm';
-import { useAuth } from './AuthContext';
+import Home from './components/Home';
+import BuildDetail from './components/BuildDetail';
 import './App.css';
 
 function App() {
-  const { user } = useAuth();
-  const [showUpload, setShowUpload] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="app">
       <Navbar />
       <main className="container">
-        <header className="hero">
-          <h2>Showcase your custom Scrambler.</h2>
-          <p>The community for custom bike enthusiasts.</p>
-          {user && (
-            <button 
-              className="btn btn-primary" 
-              style={{ marginTop: '20px' }}
-              onClick={() => setShowUpload(!showUpload)}
-            >
-              {showUpload ? 'Close Upload' : 'Share Your Build'}
-            </button>
-          )}
-        </header>
-        
-        {showUpload && user && (
-          <UploadForm onComplete={() => setShowUpload(false)} />
-        )}
-
-        <Feed />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/build/:id" element={<BuildDetail />} />
+        </Routes>
       </main>
 
-      {user && (
+      {showBackToTop && (
         <button 
-          className={`fab-upload ${showUpload ? 'active' : ''}`}
-          onClick={() => setShowUpload(!showUpload)}
-          aria-label="Toggle upload"
+          className="back-to-top"
+          onClick={scrollToTop}
+          aria-label="Back to top"
         >
-          {showUpload ? '×' : '+'}
+          ↑
         </button>
       )}
 

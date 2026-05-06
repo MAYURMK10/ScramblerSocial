@@ -27,15 +27,17 @@ A user-centric platform for scrambler enthusiasts to showcase their custom build
 ## 4. Implementation Steps
 1. [x] **Initial Cleanup:** Remove boilerplate files from CRA.
 2. [x] **Firebase Integration:** Initialize Firebase project and local configuration.
-3. [x] **Components Development:**
+3. **Components Development:**
     - [x] `Navbar`: Brand logo and Auth buttons.
     - [x] `Feed`: Grid of `BuildCard` components.
     - [x] `UploadForm`: Modal/Page for new submissions.
-    - [ ] `BuildDetail`: Expanded view for comments and likes (Basic version in BuildCard).
-4. [x] **Logic Implementation:**
+    - [x] `BuildDetail`: Focused view for a single build with a permanent URL.
+4. **Logic Implementation:**
     - [x] Auth state management (React Context).
     - [x] Firestore queries for fetching and posting data.
     - [x] Firebase Storage handling for image resizing/uploads.
+    - [x] Client-side routing with `react-router-dom`.
+
 5. [x] **Polishing:** CSS transitions, responsive grid, and empty states.
 6. [x] **Mobile Optimization:**
     - [x] Responsive CSS media queries.

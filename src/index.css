@@ -243,7 +243,13 @@ a {
   gap: 12px;
 }
 
-.delete-btn {
+.card-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.delete-btn, .edit-btn {
   background: none;
   border: none;
   font-size: 1.1rem;
@@ -259,6 +265,12 @@ a {
   opacity: 1;
 }
 
+.edit-btn:hover {
+  background-color: rgba(255, 140, 0, 0.1);
+  color: var(--accent);
+  opacity: 1;
+}
+
 .avatar {
   width: 32px;
   height: 32px;
@@ -268,6 +280,16 @@ a {
 .username {
   font-size: 0.9rem;
   font-weight: 600;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-ago {
+  font-size: 0.7rem;
+  color: var(--text-dim);
 }
 
 .card-image-wrapper {
@@ -330,6 +352,25 @@ a {
 
 .card-content h4 {
   margin-bottom: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.build-link {
+  color: var(--text-main);
+  text-decoration: none;
+}
+
+.build-link:hover {
+  color: var(--accent);
+}
+
+.edited-tag {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  font-style: italic;
 }
 
 .description {
@@ -350,9 +391,50 @@ a {
   background: none;
   color: var(--text-main);
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-/* ... previous styles ... */
+.share-btn {
+  margin-left: auto;
+  font-size: 0.85rem !important;
+  color: var(--text-dim) !important;
+}
+
+.share-btn:hover {
+  color: var(--accent) !important;
+}
+
+/* Comments */
+
+.edit-form input,
+.edit-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.edit-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 0.7rem;
+}
 
 /* Comments */
 .comments-section {
@@ -371,6 +453,31 @@ a {
   font-size: 0.85rem;
   margin-bottom: 8px;
   color: var(--text-dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.comment-text {
+  flex: 1;
+}
+
+.btn-delete-comment {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0 5px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.btn-delete-comment:hover {
+  opacity: 1;
+  color: var(--error);
 }
 
 .comment strong {
@@ -385,6 +492,124 @@ a {
   border-radius: 4px;
   color: var(--text-main);
   font-size: 0.85rem;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.upload-form .form-group input, 
+.upload-form .form-group textarea {
+  margin-bottom: 0;
+}
+
+/* Mods Input */
+.mods-input {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.mods-input input {
+  flex: 1;
+}
+
+.btn-add-mod {
+  padding: 0 15px;
+  background-color: var(--border);
+  color: var(--text-main);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.btn-add-mod:hover {
+  background-color: var(--accent);
+  color: #000;
+}
+
+.mods-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mod-tag {
+  background-color: rgba(255, 140, 0, 0.1);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  border: 1px solid rgba(255, 140, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mod-tag button {
+  background: none;
+  color: var(--accent);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0;
+}
+
+/* AI Status */
+.ai-status {
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin-top: 10px;
+  font-style: italic;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Build Card Mods Display */
+.base-bike-info {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  background-color: rgba(255,255,255,0.05);
+  padding: 8px 12px;
+  border-radius: 4px;
+  border-left: 3px solid var(--accent);
+}
+
+.card-mods-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 15px;
+}
+
+.mod-pill {
+  font-size: 0.7rem;
+  background-color: var(--border);
+  color: var(--text-dim);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.mod-pill:hover {
+  border-color: var(--accent);
+  color: var(--text-main);
 }
 
 /* Responsive Queries */
@@ -478,6 +703,29 @@ a {
   transform: rotate(45deg);
 }
 
+.back-to-top {
+  position: fixed;
+  bottom: 80px;
+  left: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  z-index: 99;
+}
+
+.back-to-top:hover {
+  background-color: var(--border);
+  color: var(--accent);
+}
+
 @media (max-width: 768px) {
   .fab-upload {
     display: flex;
@@ -494,5 +742,11 @@ a {
   .dev-footer {
     padding: 5px;
     font-size: 0.7rem;
+  }
+
+  .back-to-top {
+    bottom: 80px;
+    width: 45px;
+    height: 45px;
   }
 }
