@@ -19,8 +19,12 @@ const UploadForm = ({ onComplete }) => {
 
   const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
+    console.log("📸 UploadForm: Files selected:", files.length);
+    
     if (files.length > 0) {
       const isFirstUpload = images.length === 0;
+      console.log("📸 UploadForm: Is this the first upload?", isFirstUpload);
+      
       const newImages = [...images, ...files].slice(0, 5);
       setImages(newImages);
       
@@ -29,13 +33,18 @@ const UploadForm = ({ onComplete }) => {
 
       // Trigger AI Analysis on the first image added
       if (isFirstUpload && files[0]) {
+        console.log("📸 UploadForm: Triggering AI analysis...");
         setAnalyzing(true);
         const aiResult = await analyzeBikeImage(files[0]);
+        console.log("📸 UploadForm: AI analysis result received:", aiResult);
+        
         if (aiResult) {
           setTitle(aiResult.suggestedTitle || '');
           setDescription(aiResult.suggestedDescription || '');
           setBaseBike(aiResult.baseBike || '');
           setModifications(aiResult.modifications || []);
+        } else {
+          console.warn("📸 UploadForm: AI result was empty or failed.");
         }
         setAnalyzing(false);
       }

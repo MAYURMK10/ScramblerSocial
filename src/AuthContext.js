@@ -19,7 +19,16 @@ export function AuthProvider({ children }) {
       return;
     }
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.warn("Login popup was closed before completion.");
+      } else {
+        console.error("Authentication error:", error);
+        alert("Failed to login. Please try again.");
+      }
+    }
   };
 
   const logout = () => {
